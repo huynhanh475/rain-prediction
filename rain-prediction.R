@@ -3,6 +3,8 @@ library(datasets)
 library(dplyr)
 library(caTools)
 library(ROCR)
+library(ggplot2)
+library(cowplot)
 
 # ---------------- IMPORT DATA ----------------
 weather_data <- read.csv("./weather_data.csv", )
@@ -23,14 +25,13 @@ drops <- c("name", "datetime", "snow",
 weather_data <- weather_data[ , !(names(weather_data) %in% drops)]
 # Fill last missing rain prediction result
 weather_data[is.na(weather_data)] <- 1
-boxplot(weather_data$dew)
 summary(weather_data)
 # ---------------- SPLITTING DATASET ----------------
 split <- sample.split(weather_data, SplitRatio = 0.8)
 train_reg <- subset(weather_data, split == "TRUE")
 test_reg <- subset(weather_data, split == "FALSE")
 
-# ---------------- Training model ----------------
+# ---------------- TRAINING MODEL ----------------
 logistic_model <- glm(tomorrowrain ~ .,
                       data = train_reg,
                       family = "binomial")
@@ -83,7 +84,7 @@ ll.proposed <- logistic_model$deviance/-2
 ## The p-value for the R^2
 1 - pchisq(2*(ll.proposed - ll.null), df=(length(logistic_model$coefficients)-1))
 
-## now we can plot the data
+## Plot the data
 predicted.data <- data.frame(
   probability.of.tomorrowrain=logistic_model$fitted.values,
   tomorrowrain=train_reg$tomorrowrain)
@@ -92,12 +93,12 @@ predicted.data <- predicted.data[
   order(predicted.data$probability.of.tomorrowrain, decreasing=FALSE),]
 predicted.data$rank <- 1:nrow(predicted.data)
 
-## Lastly, we can plot the predicted probabilities for each sample having
-## heart disease and color by whether or not they actually had heart disease
+## Plot the predicted probabilities for each sample raining the day after
+## and color by whether or not they actually rained
 ggplot(data=predicted.data, aes(x=rank, y=probability.of.tomorrowrain)) +
   geom_point(aes(color=tomorrowrain), alpha=1, shape=4, stroke=2) +
   xlab("Index") +
-  ylab("Predicted probability of getting heart disease")
+  ylab("Predicted probability of raining tomorrow")
 
 # Clear packages
 detach("package:datasets", unload = TRUE)  # For base
