@@ -1,3 +1,4 @@
+# BEGINNING OF THE CODE
 # ---------------- INSTALL AND LOAD PACKAGES ----------------
 library(datasets)
 library(dplyr)
@@ -17,6 +18,9 @@ weather_data <- weather_data %>% mutate(
                     todayrain = if_else(preciptype == "rain", 1, 0),
                     tomorrowrain = if_else(lead(preciptype) == "rain", 1, 0)
                 )
+# Treat todayrain and tomorrowrain as factor
+weather_data$todayrain <- as.factor(weather_data$todayrain)
+weather_data$tomorrowrain <- as.factor(weather_data$tomorrowrain)
 # Drop unnecessary column
 drops <- c("name", "datetime", "snow",
             "precipprob" ,"precip", "precipcover", "preciptype", "sealevelpressure",
@@ -100,10 +104,9 @@ ggplot(data=predicted.data, aes(x=rank, y=probability.of.tomorrowrain)) +
   xlab("Index") +
   ylab("Predicted probability of raining tomorrow")
 
-# Clear packages
+# Clear packages and console
 detach("package:datasets", unload = TRUE)  # For base
-
-# Clear console
 cat("\014")  # ctrl+L
 
 # Clear mind :)
+# END OF THE CODE
