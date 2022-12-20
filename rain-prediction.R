@@ -1,6 +1,6 @@
 # BEGINNING OF THE CODE
 # ---------------- INSTALL AND LOAD PACKAGES ----------------
-library(datasets)
+library( )
 library(dplyr)
 library(caTools)
 library(ROCR)
@@ -15,9 +15,10 @@ head(weather_data)
 weather_data[is.na(weather_data)] <- 0
 # Convert today and tomorrow rain data to binary
 weather_data <- weather_data %>% mutate(
-                    todayrain = if_else(preciptype == "rain", 1, 0),
-                    tomorrowrain = if_else(lead(preciptype) == "rain", 1, 0)
+                    todayrain = if_else(precip > 0, 1, 0),
+                    tomorrowrain = if_else(lead(precip) > 0, 1, 0)
                 )
+sum(weather_data$todayrain)
 # Treat todayrain and tomorrowrain as factor
 weather_data$todayrain <- as.factor(weather_data$todayrain)
 weather_data$tomorrowrain <- as.factor(weather_data$tomorrowrain)
